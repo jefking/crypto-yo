@@ -1,8 +1,8 @@
 {
-  "name": "wallet",
+  "name": "crypto.yo.wallet",
   "version": "0.0.1",
   "author": "Jef King",
-  "description": "Crypto Bro Wallet",
+  "description": "Crypto Yo Wallet",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

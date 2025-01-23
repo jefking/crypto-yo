@@ -10,7 +10,6 @@ const config = {
 };
 
 const app = express();
-app.use(bodyParser.json());
 app.use('/', express.static('public', config.serveOptions));
 app.disable('x-powered-by');
 
