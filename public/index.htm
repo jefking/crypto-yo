@@ -17,7 +17,7 @@
     // locale & dateLocale
     import { enUS, dateEnUS } from 'naive-ui'
 
-    const app = defineComponent({
+    const vueApp = defineComponent({
         components: {
             NConfigProvider,
             NInput,
@@ -47,7 +47,7 @@
 
 <body>
     <div id="app">
-        <h1>Bitcoin Price Index</h1>
+        <h1>Price Index</h1>
         <div v-for="currency in info" class="currency">
             {{ currency.description }}:
             <span class="lighten">
@@ -57,7 +57,7 @@
         <div id="cryptoVis"></div>
     </div>
     <script>
-        const app = Vue.createApp({
+        const vueInstance = Vue.createApp({
             data() {
                 return {
                     info: [],
@@ -70,9 +70,28 @@
                 },
                 fetchData() {
                     axios
-                        .get('https://api.coindesk.com/v1/bpi/currentprice.json')
+                        .get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd')
                         .then(response => {
-                            this.info = Object.values(response.data.bpi).filter(this.usdFilter);
+                            this.info = [
+                                {
+                                    code: 'BTC',
+                                    description: 'Bitcoin',
+                                    rate_float: response.data.bitcoin.usd,
+                                    symbol: '$'
+                                },
+                                {
+                                    code: 'ETH',
+                                    description: 'Ethereum',
+                                    rate_float: response.data.ethereum.usd,
+                                    symbol: '$'
+                                },
+                                {
+                                    code: 'SOL',
+                                    description: 'Solana',
+                                    rate_float: response.data.solana.usd,
+                                    symbol: '$'
+                                }
+                            ];
                             this.drawGraph(); // Call to draw the graph after data is fetched
                         })
                         .catch(error => {
@@ -89,7 +108,7 @@
             }
         });
 
-        app.mount('#app');
+        vueInstance.mount('#app');
         // set the dimensions and margins of the graph
         var margin = { top: 10, right: 30, bottom: 30, left: 60 },
             width = 460 - margin.left - margin.right,
