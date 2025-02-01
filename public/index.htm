@@ -32,8 +32,6 @@
             }
         }
     })
-
-    // ... rest of your Vue app code
 </script>
 
 <template>
@@ -72,33 +70,39 @@
                     axios
                         .get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd')
                         .then(response => {
+                            // Extract latest prices for Bitcoin, Ethereum, and Solana
                             this.info = [
                                 {
                                     code: 'BTC',
                                     description: 'Bitcoin',
-                                    rate_float: response.data.bitcoin.usd,
+                                    rate_float: response.data.bitcoin.usd, // Latest price for Bitcoin
                                     symbol: '$'
                                 },
                                 {
                                     code: 'ETH',
                                     description: 'Ethereum',
-                                    rate_float: response.data.ethereum.usd,
+                                    rate_float: response.data.ethereum.usd, // Latest price for Ethereum
                                     symbol: '$'
                                 },
                                 {
                                     code: 'SOL',
                                     description: 'Solana',
-                                    rate_float: response.data.solana.usd,
+                                    rate_float: response.data.solana.usd, // Latest price for Solana
                                     symbol: '$'
                                 }
                             ];
-                            this.drawGraph(); // Call to draw the graph after data is fetched
+
+                            // Fetch historical data for Bitcoin, Ethereum, and Solana
+                            return axios.get('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=7');
+                        })
+                        .then(response => {
+                            this.drawGraph(response.data.prices); // Pass historical prices to drawGraph
                         })
                         .catch(error => {
                             console.error("Error fetching data:", error); // Log any errors
                         });
                 },
-                drawGraph() {
+                drawGraph(prices) {
                     // Clear any existing SVG elements
                     d3.select("#cryptoVis").selectAll("*").remove();
 
@@ -116,10 +120,10 @@
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
                     // Prepare the data
-                    var data = this.info.map(d => ({
-                        date: new Date(), // Use the current date for simplicity
-                        value: d.rate_float,
-                        description: d.description
+                    var data = prices.map((price, index) => ({
+                        date: new Date(price[0]),
+                        value: price[1],
+                        description: index === 0 ? 'Bitcoin' : index === 1 ? 'Ethereum' : 'Solana'
                     }));
 
                     // Add X axis --> it is a date format
