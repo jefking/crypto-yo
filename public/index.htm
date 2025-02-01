@@ -108,8 +108,8 @@
 
                     // Set the dimensions and margins of the graph
                     var margin = { top: 10, right: 30, bottom: 30, left: 60 },
-                        width = 460 - margin.left - margin.right,
-                        height = 400 - margin.top - margin.bottom;
+                        width = window.innerWidth - margin.left - margin.right, // Full width minus margins
+                        height = window.innerHeight - margin.top - margin.bottom; // Full height minus margins
 
                     // Append the svg object to the body of the page
                     var svg = d3.select("#cryptoVis")
@@ -119,9 +119,9 @@
                         .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-                    // Prepare the data
+                    // Prepare the data for the graph
                     var data = prices.map((price, index) => ({
-                        date: new Date(price[0]),
+                        date: new Date(Date.now() - (6 - index) * 24 * 60 * 60 * 1000), // Calculate the date for each price
                         value: price[1],
                         description: index === 0 ? 'Bitcoin' : index === 1 ? 'Ethereum' : 'Solana'
                     }));
@@ -159,8 +159,8 @@
                         .append("circle")
                         .attr("cx", function (d) { return x(d.date); })
                         .attr("cy", function (d) { return y(d.value); })
-                        .attr("r", 5)
-                        .attr("fill", "red");
+                        .attr("r", 2)
+                        .attr("fill", "lightsteelblue");
 
                     // Add labels
                     svg.selectAll("text")
